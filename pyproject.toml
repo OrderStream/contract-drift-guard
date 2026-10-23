@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "contract-drift-guard"
+name = "orderstream-contract-drift-guard"
 version = "1.0.0"
 description = "CI gate that extracts runtime payload schemas during backend test execution and diffs them against frontend TypeScript definitions to catch API schema drifts before release."
 readme = "README.md"
 requires-python = ">=3.9"
-authors = [{ name = "OrderStream", email = "orderstream@users.noreply.github.com" }]
+authors = [{ name = "OrderStream", email = "hashdecode77@gmail.com" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
