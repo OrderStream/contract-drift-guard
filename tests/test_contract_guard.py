@@ -42,6 +42,27 @@ export interface UserProfile {
     assert profile.fields["email"].nullable is True
     assert profile.fields["tags"].expected_type == "array"
 
+def test_ts_parser_nested_braces():
+    nested_code = """
+    export interface ComplexAccount {
+        accountId: string;
+        settings: {
+            theme: string;
+            notifications: boolean;
+        };
+        isVerified: boolean;
+    }
+    """
+    types = TSParser.parse_typescript(nested_code)
+    assert "ComplexAccount" in types
+    acc = types["ComplexAccount"]
+    assert "accountId" in acc.fields
+    assert "settings" in acc.fields
+    assert acc.fields["settings"].expected_type == "object"
+    # Crucial assertion: isVerified after nested closing brace must be found!
+    assert "isVerified" in acc.fields
+    assert acc.fields["isVerified"].expected_type == "boolean"
+
 def test_contract_comparator_detects_drift():
     ts_code = """
 interface Product {
