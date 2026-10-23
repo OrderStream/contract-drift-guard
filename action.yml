@@ -1,0 +1,49 @@
+name: "Contract Drift Guard"
+description: "Diff backend API payload schemas against frontend TypeScript definitions to block schema drifts"
+branding:
+  icon: "check-circle"
+  color: "blue"
+inputs:
+  backend_payload:
+    description: "Path to backend JSON response payload file"
+    required: true
+  frontend_types:
+    description: "Path to frontend TypeScript definition file (.ts)"
+    required: true
+  type_name:
+    description: "TypeScript interface/type name to validate"
+    required: true
+  fail_on_extra:
+    description: "Fail if unexpected extra fields are present in backend payload"
+    required: false
+    default: "false"
+  license_key:
+    description: "OrderStream Pro/Enterprise license key (optional)"
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install contract-drift-guard
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ${{ github.action_path }}
+    - name: Run Schema Drift Diff
+      shell: bash
+      env:
+        ORDERSTREAM_LICENSE_KEY: ${{ inputs.license_key }}
+      run: |
+        EXTRA_FLAG=""
+        if [ "${{ inputs.fail_on_extra }}" = "true" ]; then
+          EXTRA_FLAG="--fail-on-extra"
+        fi
+        contract-drift-guard check \
+          --backend-payload "${{ inputs.backend_payload }}" \
+          --frontend-types "${{ inputs.frontend_types }}" \
+          --type-name "${{ inputs.type_name }}" \
+          $EXTRA_FLAG
